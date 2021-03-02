@@ -10,6 +10,17 @@ services:
     volumes:
       - ./laravel:/laravel
     working_dir: /laravel
+    depends_on:
+      - mysql
+    command: >
+      sh -c '
+        composer install
+        cp .env.local .env
+        php artisan key:generate
+        php artisan migrate
+        php artisan db:seed
+        php artisan serve --host 0.0.0.0
+      '
 
   mysql:
     # M1 Mac ARM
