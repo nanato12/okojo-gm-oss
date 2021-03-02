@@ -15,3 +15,6 @@ ENV PATH $PATH:~/.composer/vendor/bin
 
 # Laravel
 RUN composer global require "laravel/installer"
+
+# MYSQL driver
+RUN docker-php-ext-install pdo_mysql
