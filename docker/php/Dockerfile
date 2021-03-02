@@ -17,4 +17,4 @@ ENV PATH $PATH:~/.composer/vendor/bin
 RUN composer global require "laravel/installer"
 
 # MYSQL driver
-RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo_mysql sockets
