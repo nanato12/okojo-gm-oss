@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a16c3c541bd99241cab1c21ce8e83ac",
+    "content-hash": "6c4a214d9e4e630e223aaa1c5a7957e1",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1381,6 +1381,93 @@
             "time": "2021-01-18T20:58:21+00:00"
         },
         {
+            "name": "linecorp/line-bot-sdk",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/line/line-bot-sdk-php.git",
+                "reference": "3be92ddbcdbf165e2415f75cdfe5e5793c08a626"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/line/line-bot-sdk-php/zipball/3be92ddbcdbf165e2415f75cdfe5e5793c08a626",
+                "reference": "3be92ddbcdbf165e2415f75cdfe5e5793c08a626",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-sockets": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "ext-posix": "*",
+                "orchestra/testbench": "*",
+                "phpmd/phpmd": "~2.9",
+                "phpunit/phpunit": "^4.8.36||^5||^6||^7",
+                "squizlabs/php_codesniffer": "~3.5"
+            },
+            "suggest": {
+                "apigen/apigen": "Install with roave/better-reflection:dev-master to generate docs",
+                "roave/better-reflection": "Required by apigen/apigen:dev-master"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LINE\\Laravel\\LINEBotServiceProvider"
+                    ],
+                    "aliases": {
+                        "LINEBot": "LINE\\Laravel\\Facade\\LINEBot"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LINE\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "moznion",
+                    "email": "moznion@gmail.com",
+                    "role": "Retired"
+                },
+                {
+                    "name": "Satoru Yoshihara",
+                    "email": "vaduz0@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Satoshi Shibuya",
+                    "email": "satosby@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Shunsuke Mori",
+                    "email": "morimorim7180@gmail.com",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "SDK of the LINE BOT API for PHP",
+            "homepage": "https://github.com/line/line-bot-sdk-php",
+            "keywords": [
+                "bot",
+                "line",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/line/line-bot-sdk-php/issues",
+                "source": "https://github.com/line/line-bot-sdk-php/tree/master"
+            },
+            "time": "2021-03-02T04:45:29+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "2.2.0",
             "source": {
@@ -1475,6 +1562,53 @@
                 }
             ],
             "time": "2020-12-14T13:15:25+00:00"
+        },
+        {
+            "name": "nanato12/phine",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nanato12/phine.git",
+                "reference": "e45f6c19e4b538d51b8db8d4e25938e0401cd37e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nanato12/phine/zipball/e45f6c19e4b538d51b8db8d4e25938e0401cd37e",
+                "reference": "e45f6c19e4b538d51b8db8d4e25938e0401cd37e",
+                "shasum": ""
+            },
+            "require": {
+                "linecorp/line-bot-sdk": "dev-master"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phine\\": "src/Phine/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "nanato12",
+                    "email": "admin@nanato12.info"
+                }
+            ],
+            "description": "LINE Official Bot PHP Library",
+            "homepage": "https://blog.nanato12.info",
+            "keywords": [
+                "phine"
+            ],
+            "support": {
+                "issues": "https://github.com/nanato12/phine/issues",
+                "source": "https://github.com/nanato12/phine/tree/v3.0.0"
+            },
+            "time": "2021-01-06T18:09:42+00:00"
         },
         {
             "name": "nesbot/carbon",
