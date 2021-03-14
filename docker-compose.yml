@@ -6,7 +6,7 @@ services:
     build:
       context: ./docker/php
     ports:
-      - 8000:8000
+      - 8888:8000
     volumes:
       - ./laravel:/laravel
     working_dir: /laravel
@@ -15,7 +15,6 @@ services:
     command: >
       sh -c '
         composer install
-        cp .env.local .env
         php artisan key:generate
         php artisan migrate
         php artisan db:seed
