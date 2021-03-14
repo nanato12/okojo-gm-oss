@@ -2,13 +2,13 @@
 
 namespace OkojoBot\MessageReciever;
 
-use LINE\LINEBot;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use OkojoBot\MessageReciever\BaseReciever;
+use Phine\Client;
 
 class TextMessageReciever extends BaseReciever
 {
-    /** @var LINEBot $bot Botインスタンス */
+    /** @var Client $bot Botインスタンス */
     protected $bot;
 
     /** @var TextMessage $event テキストメッセージイベント */
