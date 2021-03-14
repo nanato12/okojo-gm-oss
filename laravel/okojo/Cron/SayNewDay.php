@@ -2,24 +2,21 @@
 
 namespace OkojoBot\Cron;
 
+use LINE\LINEBot;
+use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use OkojoBot\Config;
-use Phine\Client;
 
 class SayNewDay
 {
     public static function helloAdmin()
     {
-        $bot = new Client(
-            env("LINE_BOT_CHANNEL_SECRET"),
-            env("LINE_BOT_CHANNEL_ACCESS_TOKEN")
-        );
+        /** @var LINEBot $bot */
+        $bot = app('line-bot');
 
-        $messages = $bot->createMultiMessage(
-            [
-                $bot->createTextMessage("hello"),
-                $bot->createTextMessage("hi"),
-            ]
-        );
+        $messages = new MultiMessageBuilder();
+        $messages->add(new TextMessageBuilder("hello"));
+        $messages->add(new TextMessageBuilder("hi"));
 
         $bot->pushMessage(Config::ADMIN_UID, $messages);
     }
