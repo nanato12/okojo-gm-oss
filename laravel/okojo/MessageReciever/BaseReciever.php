@@ -2,12 +2,12 @@
 
 namespace OkojoBot\MessageReciever;
 
+use LINE\LINEBot;
 use LINE\LINEBot\Event\BaseEvent;
-use Phine\Client;
 
 abstract class BaseReciever
 {
-    /** @var Client $bot Botインスタンス */
+    /** @var LINEBot $bot Botインスタンス */
     protected $bot;
 
     /** @var BaseEvent $event 受信イベント */
@@ -16,10 +16,10 @@ abstract class BaseReciever
     /**
      * レシーバのコンストラクタ
      *
-     * @param Client $bot LINEBotのインスタンス
+     * @param LINEBot $bot LINEBotのインスタンス
      * @param BaseEvent $event 受信したイベント
      */
-    function __construct(Client $bot, BaseEvent $event)
+    function __construct(LINEBot $bot, BaseEvent $event)
     {
         $this->bot = $bot;
         $this->event = $event;
