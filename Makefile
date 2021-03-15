@@ -1,0 +1,2 @@
+format:
+	phpcbf ./laravel/okojo
