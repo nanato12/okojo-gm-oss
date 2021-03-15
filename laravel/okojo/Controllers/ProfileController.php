@@ -13,9 +13,14 @@ use App\Models\RPG;
  */
 class ProfileController
 {
-    /** @var string $uid ユーザーID */
+    /**
+     * @var string $uid ユーザーID
+     */
     public $uid;
-    /** @var Profile $profile Profileモデル */
+
+    /**
+     * @var Profile $profile Profileモデル
+     */
     public $profile;
 
     function __construct(string $uid)
