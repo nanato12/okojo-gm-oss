@@ -46,6 +46,7 @@
 
 namespace OkojoBot\Cron;
 
+use Carbon\Carbon;
 use OkojoBot\Config;
 use Phine\Client;
 
@@ -58,10 +59,12 @@ class SayNewDay
             env("LINE_BOT_CHANNEL_ACCESS_TOKEN")
         );
 
+        $now = new Carbon();
+        $nowString = $now->format('Y/m/d H:i:s');;
+
         $messages = $bot->createMultiMessage(
             [
-                $bot->createTextMessage("hello"),
-                $bot->createTextMessage("hi"),
+                $bot->createTextMessage("【${nowString}】hello"),
             ]
         );
 
