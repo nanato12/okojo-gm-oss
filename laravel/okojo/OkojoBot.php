@@ -61,7 +61,7 @@ interface IOkojoBot
     /**
      * 各イベントタイプごとにレシーバを設定する。
      *
-     * @param Client $bot Botインスタンス
+     * @param Client    $bot   Botインスタンス
      * @param BaseEvent $event イベントオブジェクト
      *
      * @return void
@@ -89,7 +89,7 @@ class OkojoBot implements IOkojoBot
     /**
      * Clientの処理をする。
      *
-     * @param Client $bot Botインスタンス
+     * @param Client    $bot   Botインスタンス
      * @param BaseEvent $event イベントオブジェクト
      */
     function __construct(Client $bot, BaseEvent $event)
