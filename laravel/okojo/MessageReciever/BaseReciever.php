@@ -51,7 +51,9 @@ use Phine\Client;
 
 abstract class BaseReciever
 {
-    /** @var Client $bot Botインスタンス */
+    /**
+     * @var Client $bot Botインスタンス
+     */
     protected $bot;
 
     /**
@@ -62,7 +64,7 @@ abstract class BaseReciever
     /**
      * レシーバのコンストラクタ
      *
-     * @param Client $bot LINEBotのインスタンス
+     * @param Client    $bot   LINEBotのインスタンス
      * @param BaseEvent $event 受信したイベント
      */
     function __construct(Client $bot, BaseEvent $event)
