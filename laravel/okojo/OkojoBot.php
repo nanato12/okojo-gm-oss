@@ -46,13 +46,12 @@
 
 namespace OkojoBot;
 
-use LINE\LINEBot;
 use LINE\LINEBot\Event\BaseEvent;
 use LINE\LINEBot\Event\MessageEvent;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
-
 use OkojoBot\MessageReciever\BaseReciever;
 use OkojoBot\MessageReciever\TextMessageReciever;
+use Phine\Client;
 
 /**
  * OkojoBot クラスのインターフェース
@@ -62,12 +61,12 @@ interface IOkojoBot
     /**
      * 各イベントタイプごとにレシーバを設定する。
      *
-     * @param LINEBot   $bot   Botインスタンス
+     * @param Client    $bot   Botインスタンス
      * @param BaseEvent $event イベントオブジェクト
      *
      * @return void
      */
-    function setReciever(LINEBot $bot, BaseEvent $event): void;
+    function setReciever(Client $bot, BaseEvent $event): void;
 
     /**
      * レシーバを実行する。
@@ -88,19 +87,22 @@ class OkojoBot implements IOkojoBot
     private $reciever;
 
     /**
-     * LINEBotの処理をする。
+     * Clientの処理をする。
      *
-     * @param LINEBot   $bot   Botインスタンス
+     * @param Client    $bot   Botインスタンス
      * @param BaseEvent $event イベントオブジェクト
      */
-    function __construct(LINEBot $bot, BaseEvent $event)
+    function __construct(Client $bot, BaseEvent $event)
     {
         // レシーバの設定
         $this->setReciever($bot, $event);
     }
 
-    function setReciever(LINEBot $bot, BaseEvent $event): void
+    function setReciever(Client $bot, BaseEvent $event): void
     {
+        // リプライトークンをセットする。
+        $bot->setReplyToken($event->getReplyToken());
+
         // メッセージイベント
         if ($event instanceof MessageEvent) {
             // テキストメッセージ

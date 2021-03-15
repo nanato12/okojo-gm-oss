@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use LINE\LINEBot;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 use OkojoBot\OkojoBot;
+use Phine\Client;
 
 class LineBotController extends Controller
 {
@@ -20,8 +20,10 @@ class LineBotController extends Controller
      */
     public function callback(Request $request)
     {
-        /** @var LINEBot $bot */
-        $bot = app('line-bot');
+        $bot = new Client(
+            env("LINE_BOT_CHANNEL_SECRET"),
+            env("LINE_BOT_CHANNEL_ACCESS_TOKEN")
+        );
 
         // LINEのシグネチャ確認
         if (isset($_SERVER['HTTP_' . HTTPHeader::LINE_SIGNATURE])) {
