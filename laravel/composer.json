@@ -37,6 +37,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "OkojoBot\\": "okojo/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
