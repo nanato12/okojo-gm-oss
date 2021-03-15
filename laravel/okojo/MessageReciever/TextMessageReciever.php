@@ -52,7 +52,9 @@ use Phine\Client;
 
 class TextMessageReciever extends BaseReciever
 {
-    /** @var Client $bot Botインスタンス */
+    /**
+     * @var Client $bot Botインスタンス
+     */
     protected $bot;
 
     /**
@@ -71,8 +73,8 @@ class TextMessageReciever extends BaseReciever
         $text = $this->event->getText();
 
         switch ($text) {
-            default:
-                $this->bot->replyText($this->event->getReplyToken(), $text);
+        default:
+            $this->bot->replyText($this->event->getReplyToken(), $text);
         }
     }
 }
