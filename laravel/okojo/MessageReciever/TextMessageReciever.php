@@ -47,7 +47,9 @@
 namespace OkojoBot\MessageReciever;
 
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
+use OkojoBot\Controllers\ProfileController;
 use OkojoBot\MessageReciever\BaseReciever;
+use OkojoBot\Utils\Flex;
 use Phine\Client;
 
 class TextMessageReciever extends BaseReciever
@@ -72,9 +74,45 @@ class TextMessageReciever extends BaseReciever
          */
         $text = $this->event->getText();
 
+        /**
+         * @var string|null $uid ユーザーID
+         */
+        $uid = $this->event->getUserId();
+
+        // ユーザーIDが取得できない場合、即rerurn
+        if (is_null($uid)) {
+            return;
+        }
+
+        // プロフィールを扱うコントローラ
+        $profileController = new ProfileController($uid);
+
+        // 送信するメッセージ群
+        $messages = [];
+
         switch ($text) {
-        default:
-            $this->bot->replyText($this->event->getReplyToken(), $text);
+            case "新規登録":
+                if (!$profileController->isRegistered()) {
+                    $profileController->register();
+                    $messages[] = $this->bot->createTextMessage("新規登録が完了しました！");
+                } else {
+                    $messages[] = $this->bot->createTextMessage("既に登録済みのユーザーです。");
+                }
+                break;
+            default:
+                $messages[] = $this->bot->createTextMessage($text);
+        }
+
+        // メッセージが存在していれば、リプライする。
+        if (!empty($messages)) {
+            // 新規登録していないなら、新規登録ボタンのFlexメッセージを上書く。
+            if (!$profileController->isRegistered()) {
+                $messages = [
+                    $this->bot->createFlexMessage(Flex::getNoRegister(), "おこじょGM_新規登録"),
+                ];
+            }
+            // リプライ
+            $this->bot->replyMessageV2($messages);
         }
     }
 }
