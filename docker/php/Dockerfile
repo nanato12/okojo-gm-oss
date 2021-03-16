@@ -2,7 +2,14 @@ FROM php:8.0-fpm
 
 # APT
 RUN apt-get update && \
-    apt-get install -y git unzip
+    apt-get install -y git unzip nodejs npm
+
+# n
+RUN npm install -g n
+RUN n 15
+
+# npm update
+RUN npm install -g npm
 
 # Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -18,3 +25,5 @@ RUN composer global require "laravel/installer"
 
 # MYSQL driver
 RUN docker-php-ext-install pdo_mysql sockets
+
+RUN echo "hello"
