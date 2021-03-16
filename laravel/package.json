@@ -10,6 +10,7 @@
         "production": "mix --production"
     },
     "devDependencies": {
+        "@mdi/font": "^5.9.55",
         "axios": "^0.21",
         "bootstrap": "^4.0.0",
         "deepmerge": "^2.2.1",
