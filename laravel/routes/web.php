@@ -18,6 +18,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::post('/callback', 'LineBotController@callback')->name("linebot.callback");
+if (env("APP_ENV") === "local") {
+    Route::get('/test', 'TestController@index')->name("test.index");
+}
 
 Auth::routes();
 
