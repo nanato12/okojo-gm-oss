@@ -1,2 +1,2 @@
 format:
-	phpcbf ./laravel/okojo
+	phpcbf --standard=PSR2 ./laravel/okojo
