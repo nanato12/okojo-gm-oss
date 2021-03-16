@@ -44,75 +44,30 @@
  * <https://www.gnu.org/licenses/why-not-lgpl.html>.
  */
 
-namespace OkojoBot\MessageReciever;
+namespace OkojoBot\Cron;
 
-use LINE\LINEBot\Event\MessageEvent\TextMessage;
-use OkojoBot\Controllers\ProfileController;
-use OkojoBot\MessageReciever\BaseReciever;
-use OkojoBot\Utils\Flex;
+use Carbon\Carbon;
+use OkojoBot\Config;
 use Phine\Client;
 
-class TextMessageReciever extends BaseReciever
+class SayNewDay
 {
-    /**
-     * @var Client $bot Botインスタンス
-     */
-    protected $bot;
-
-    /**
-     * @var TextMessage $event テキストメッセージイベント
-     */
-    protected $event;
-
-    /**
-     * 受信したテキストによって処理を分ける。
-     */
-    function do(): void
+    public static function helloAdmin()
     {
-        /**
-         * @var string $text 受信テキスト
-         */
-        $text = $this->event->getText();
+        $bot = new Client(
+            env("LINE_BOT_CHANNEL_SECRET"),
+            env("LINE_BOT_CHANNEL_ACCESS_TOKEN")
+        );
 
-        /**
-         * @var string|null $uid ユーザーID
-         */
-        $uid = $this->event->getUserId();
+        $now = new Carbon();
+        $nowString = $now->format('Y/m/d H:i:s');;
 
-        // ユーザーIDが取得できない場合、即rerurn
-        if (is_null($uid)) {
-            return;
-        }
+        $messages = $bot->createMultiMessage(
+            [
+                $bot->createTextMessage("【${nowString}】hello"),
+            ]
+        );
 
-        // プロフィールを扱うコントローラ
-        $profileController = new ProfileController($uid);
-
-        // 送信するメッセージ群
-        $messages = [];
-
-        switch ($text) {
-            case "新規登録":
-                if (!$profileController->isRegistered()) {
-                    $profileController->register();
-                    $messages[] = $this->bot->createTextMessage("新規登録が完了しました！");
-                } else {
-                    $messages[] = $this->bot->createTextMessage("既に登録済みのユーザーです。");
-                }
-                break;
-            default:
-                $messages[] = $this->bot->createTextMessage($text);
-        }
-
-        // メッセージが存在していれば、リプライする。
-        if (!empty($messages)) {
-            // 新規登録していないなら、新規登録ボタンのFlexメッセージを上書く。
-            if (!$profileController->isRegistered()) {
-                $messages = [
-                    $this->bot->createFlexMessage(Flex::getNoRegister(), "おこじょGM_新規登録"),
-                ];
-            }
-            // リプライ
-            $this->bot->replyMessageV2($messages);
-        }
+        $bot->pushMessage(Config::ADMIN_UID, $messages);
     }
 }

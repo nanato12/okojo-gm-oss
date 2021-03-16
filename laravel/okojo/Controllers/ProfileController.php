@@ -44,75 +44,71 @@
  * <https://www.gnu.org/licenses/why-not-lgpl.html>.
  */
 
-namespace OkojoBot\MessageReciever;
+namespace OkojoBot\Controllers;
 
-use LINE\LINEBot\Event\MessageEvent\TextMessage;
-use OkojoBot\Controllers\ProfileController;
-use OkojoBot\MessageReciever\BaseReciever;
-use OkojoBot\Utils\Flex;
-use Phine\Client;
+use App\Models\Profile;
+use App\Models\RPG;
 
-class TextMessageReciever extends BaseReciever
+interface IProfileController
 {
     /**
-     * @var Client $bot Botインスタンス
+     * 新規登録する関数
      */
-    protected $bot;
+    function register(): void;
 
     /**
-     * @var TextMessage $event テキストメッセージイベント
+     * 新規登録済か判定する関数
+     *
+     * @return bool
      */
-    protected $event;
+    function isRegistered(): bool;
+}
+
+/**
+ * ユーザープロフィールを管理するコントローラ
+ *
+ * @property string $uid ユーザーID
+ * @property Profile $profile Profileモデル
+ */
+class ProfileController implements IProfileController
+{
+    /**
+     * @var string $uid ユーザーID
+     */
+    public $uid;
 
     /**
-     * 受信したテキストによって処理を分ける。
+     * @var Profile $profile Profileモデル
      */
-    function do(): void
+    public $profile;
+
+    function __construct(string $uid)
     {
-        /**
-         * @var string $text 受信テキスト
-         */
-        $text = $this->event->getText();
+        $this->uid = $uid;
 
         /**
-         * @var string|null $uid ユーザーID
+         * @var null|Profile　$profile Profileモデル
          */
-        $uid = $this->event->getUserId();
-
-        // ユーザーIDが取得できない場合、即rerurn
-        if (is_null($uid)) {
-            return;
+        $profile = Profile::where('uid', $uid)->first();
+        if (is_null($profile)) {
+            $profile = new Profile;
+            $profile->uid = $this->uid;
+            $profile->save();
+            $profile->rpg()->save(
+                new RPG()
+            );
         }
+        $this->profile = $profile;
+    }
 
-        // プロフィールを扱うコントローラ
-        $profileController = new ProfileController($uid);
+    function register(): void
+    {
+        $this->profile->is_registered = true;
+        $this->profile->save();
+    }
 
-        // 送信するメッセージ群
-        $messages = [];
-
-        switch ($text) {
-            case "新規登録":
-                if (!$profileController->isRegistered()) {
-                    $profileController->register();
-                    $messages[] = $this->bot->createTextMessage("新規登録が完了しました！");
-                } else {
-                    $messages[] = $this->bot->createTextMessage("既に登録済みのユーザーです。");
-                }
-                break;
-            default:
-                $messages[] = $this->bot->createTextMessage($text);
-        }
-
-        // メッセージが存在していれば、リプライする。
-        if (!empty($messages)) {
-            // 新規登録していないなら、新規登録ボタンのFlexメッセージを上書く。
-            if (!$profileController->isRegistered()) {
-                $messages = [
-                    $this->bot->createFlexMessage(Flex::getNoRegister(), "おこじょGM_新規登録"),
-                ];
-            }
-            // リプライ
-            $this->bot->replyMessageV2($messages);
-        }
+    function isRegistered(): bool
+    {
+        return $this->profile->is_registered;
     }
 }

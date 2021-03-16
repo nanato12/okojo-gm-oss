@@ -44,75 +44,15 @@
  * <https://www.gnu.org/licenses/why-not-lgpl.html>.
  */
 
-namespace OkojoBot\MessageReciever;
+namespace OkojoBot;
 
-use LINE\LINEBot\Event\MessageEvent\TextMessage;
-use OkojoBot\Controllers\ProfileController;
-use OkojoBot\MessageReciever\BaseReciever;
-use OkojoBot\Utils\Flex;
-use Phine\Client;
-
-class TextMessageReciever extends BaseReciever
+/**
+ * LINEbotの設定クラス
+ */
+class Config
 {
     /**
-     * @var Client $bot Botインスタンス
+     * @var string 管理者UID
      */
-    protected $bot;
-
-    /**
-     * @var TextMessage $event テキストメッセージイベント
-     */
-    protected $event;
-
-    /**
-     * 受信したテキストによって処理を分ける。
-     */
-    function do(): void
-    {
-        /**
-         * @var string $text 受信テキスト
-         */
-        $text = $this->event->getText();
-
-        /**
-         * @var string|null $uid ユーザーID
-         */
-        $uid = $this->event->getUserId();
-
-        // ユーザーIDが取得できない場合、即rerurn
-        if (is_null($uid)) {
-            return;
-        }
-
-        // プロフィールを扱うコントローラ
-        $profileController = new ProfileController($uid);
-
-        // 送信するメッセージ群
-        $messages = [];
-
-        switch ($text) {
-            case "新規登録":
-                if (!$profileController->isRegistered()) {
-                    $profileController->register();
-                    $messages[] = $this->bot->createTextMessage("新規登録が完了しました！");
-                } else {
-                    $messages[] = $this->bot->createTextMessage("既に登録済みのユーザーです。");
-                }
-                break;
-            default:
-                $messages[] = $this->bot->createTextMessage($text);
-        }
-
-        // メッセージが存在していれば、リプライする。
-        if (!empty($messages)) {
-            // 新規登録していないなら、新規登録ボタンのFlexメッセージを上書く。
-            if (!$profileController->isRegistered()) {
-                $messages = [
-                    $this->bot->createFlexMessage(Flex::getNoRegister(), "おこじょGM_新規登録"),
-                ];
-            }
-            // リプライ
-            $this->bot->replyMessageV2($messages);
-        }
-    }
+    const ADMIN_UID = 'Ue10d267e7ad66d524781ccf16ca6ddbd';
 }
