@@ -27,6 +27,12 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+import Vuetify from 'vuetify';
+Vue.use(Vuetify);
+
 const app = new Vue({
     el: '#app',
+    vuetify: new Vuetify({
+        iconfont: 'mdi',
+    })
 });
