@@ -12,6 +12,10 @@ class Profile extends Model
     protected $table = 'profile';
     protected $primaryKey = 'id';
 
+    protected $attributes = [
+        'is_registered' => false,
+    ];
+
     function rpg()
     {
         return $this->hasOne(RPG::class, 'uid', 'uid');
