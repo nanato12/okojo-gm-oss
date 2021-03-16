@@ -44,75 +44,66 @@
  * <https://www.gnu.org/licenses/why-not-lgpl.html>.
  */
 
-namespace OkojoBot\MessageReciever;
+namespace OkojoBot\Utils;
 
-use LINE\LINEBot\Event\MessageEvent\TextMessage;
-use OkojoBot\Controllers\ProfileController;
-use OkojoBot\MessageReciever\BaseReciever;
-use OkojoBot\Utils\Flex;
-use Phine\Client;
+use OkojoBot\Exception\InvalidFlexJsonFileException;
 
-class TextMessageReciever extends BaseReciever
+class Flex
 {
     /**
-     * @var Client $bot Botインスタンス
+     * flex.json から該当するキーのFlex配列を返す関数
+     *
+     * @param string $key キー
+     *
+     * @return array Flex配列
      */
-    protected $bot;
-
-    /**
-     * @var TextMessage $event テキストメッセージイベント
-     */
-    protected $event;
-
-    /**
-     * 受信したテキストによって処理を分ける。
-     */
-    function do(): void
+    private static function getContentByKey(string $key): array
     {
-        /**
-         * @var string $text 受信テキスト
-         */
-        $text = $this->event->getText();
-
-        /**
-         * @var string|null $uid ユーザーID
-         */
-        $uid = $this->event->getUserId();
-
-        // ユーザーIDが取得できない場合、即rerurn
-        if (is_null($uid)) {
-            return;
+        // flex.jsonの存在確認
+        $jsonFilePath = __DIR__ . "/flex.json";
+        if (!file_exists($jsonFilePath)) {
+            throw new InvalidFlexJsonFileException("No such file or directory: ${jsonFilePath}");
         }
 
-        // プロフィールを扱うコントローラ
-        $profileController = new ProfileController($uid);
+        // ファイル読み込み
+        $flexItems = file_get_contents(__DIR__ . "/flex.json");
 
-        // 送信するメッセージ群
-        $messages = [];
-
-        switch ($text) {
-            case "新規登録":
-                if (!$profileController->isRegistered()) {
-                    $profileController->register();
-                    $messages[] = $this->bot->createTextMessage("新規登録が完了しました！");
-                } else {
-                    $messages[] = $this->bot->createTextMessage("既に登録済みのユーザーです。");
-                }
-                break;
-            default:
-                $messages[] = $this->bot->createTextMessage($text);
+        // jsonパース
+        $jsonContent = json_decode($flexItems, true);
+        if (is_null($jsonContent)) {
+            throw new InvalidFlexJsonFileException("Invalid json.");
+        } elseif (empty($jsonContent)) {
+            throw new InvalidFlexJsonFileException("Json file is empty.");
+        } elseif (!array_key_exists($key, $jsonContent)) {
+            throw new InvalidFlexJsonFileException("Not found key: ${key}");
         }
 
-        // メッセージが存在していれば、リプライする。
-        if (!empty($messages)) {
-            // 新規登録していないなら、新規登録ボタンのFlexメッセージを上書く。
-            if (!$profileController->isRegistered()) {
-                $messages = [
-                    $this->bot->createFlexMessage(Flex::getNoRegister(), "おこじょGM_新規登録"),
-                ];
-            }
-            // リプライ
-            $this->bot->replyMessageV2($messages);
+        return $jsonContent[$key];
+    }
+
+    /**
+     * Flex配列にフッターを付与する関数
+     *
+     * @param array Flex配列
+     *
+     * @return array Flex配列
+     */
+    private static function addFooter(array $flexContent): array
+    {
+        $footer = self::getContentByKey("footer");
+        for ($i = 0; $i < count($flexContent["contents"]); $i++) {
+            $flexContent["contents"][$i]["footer"] = $footer;
         }
+        return $flexContent;
+    }
+
+    /**
+     * 新規登録ボタンFlexを返す関数
+     *
+     * @return array Flex配列
+     */
+    public static function getNoRegister(): array
+    {
+        return self::addFooter(self::getContentByKey("no_register"));
     }
 }

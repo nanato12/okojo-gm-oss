@@ -1,0 +1,56 @@
+{
+  "no_register": {
+    "type": "carousel",
+    "contents": [
+      {
+        "type": "bubble",
+        "size": "kilo",
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "ユーザーデータがありません。",
+              "size": "xs",
+              "wrap": true
+            },
+            {
+              "type": "text",
+              "text": "新規登録をしてください。",
+              "size": "xs",
+              "wrap": true
+            },
+            {
+              "type": "button",
+              "action": {
+                "type": "message",
+                "label": "新規登録",
+                "text": "新規登録"
+              },
+              "style": "primary",
+              "color": "#5cb85cbb",
+              "margin": "md"
+            }
+          ],
+          "paddingBottom": "1px"
+        }
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "©︎ 2021 nanato12",
+        "size": "xs",
+        "align": "center",
+        "offsetTop": "-5px"
+      }
+    ],
+    "backgroundColor": "#bbbbbb",
+    "offsetTop": "10px"
+  }
+}
