@@ -72,9 +72,9 @@ class Flex
         $jsonContent = json_decode($flexItems, true);
         if (is_null($jsonContent)) {
             throw new InvalidFlexJsonFileException("Invalid json.");
-        } else if (empty($jsonContent)) {
+        } elseif (empty($jsonContent)) {
             throw new InvalidFlexJsonFileException("Json file is empty.");
-        } else if (!array_key_exists($key, $jsonContent)) {
+        } elseif (!array_key_exists($key, $jsonContent)) {
             throw new InvalidFlexJsonFileException("Not found key: ${key}");
         }
 
