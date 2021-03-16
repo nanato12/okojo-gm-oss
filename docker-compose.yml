@@ -18,6 +18,7 @@ services:
         php artisan key:generate
         php artisan migrate
         php artisan db:seed
+        npm install
         php artisan serve --host 0.0.0.0
       '
 
