@@ -2,7 +2,7 @@ FROM php:8.0-fpm
 
 # APT
 RUN apt-get update && \
-    apt-get install -y git unzip
+    apt-get install -y git unzip npm
 
 # Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
