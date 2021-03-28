@@ -15,6 +15,8 @@ class RPG extends Model
     protected $attributes = [
         'point' => 20000,
         'individual' => 1,
+        'point_update' => 0,
+        'exp_update' => 0,
         'item_limit_count' => 7,
         'bp_level' => 1,
         'bp_type' => 'normal',
