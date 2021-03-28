@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ruleset name="Laravel Standards">
+    <description>Laravel Coding Check</description>
+
+    <file>laravel/app</file>
+    <file>laravel/config</file>
+    <file>laravel/database</file>
+    <file>laravel/resources</file>
+    <file>laravel/okojo</file>
+    <file>laravel/routes</file>
+    <file>laravel/tests</file>
+
+    <exclude-pattern>*/cache/*</exclude-pattern>
+    <exclude-pattern>*/*.js</exclude-pattern>
+    <exclude-pattern>*/*.css</exclude-pattern>
+    <exclude-pattern>*/*.xml</exclude-pattern>
+    <exclude-pattern>*/*.blade.php</exclude-pattern>
+    <exclude-pattern>*/autoload.php</exclude-pattern>
+    <exclude-pattern>*/storage/*</exclude-pattern>
+    <exclude-pattern>*/docs/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/migrations/*</exclude-pattern>
+
+    <rule ref="PSR2">
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+    </rule>
+
+    <arg name="colors"/>
+    <arg value="p"/>
+
+    <ini name="memory_limit" value="128M"/>
+    <rule ref="PSR2"/>
+</ruleset>
