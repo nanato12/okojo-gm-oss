@@ -503,6 +503,52 @@ class ProfileController
     }
 
     /**
+     * ログインする関数
+     *
+     * @return Bonus
+     */
+    function login(): Bonus
+    {
+        // 累計ログインをインクリメント
+        $this->profile->rpg->total_login_count++;
+
+        /** @var Carbon|null $timestamp 最終ログイン日時 */
+        $timestamp = $this->getLastLogin();
+
+        // 最終ログイン日時がなければ
+        if (is_null($timestamp)) {
+            // 連続ログインが1日に初期化
+            $this->profile->rpg->continuous_login_count = 1;
+        }
+        // 最終ログイン日時があれば
+        else {
+            // 最終ログイン日時が昨日なら
+            if ($timestamp->isYesterday()) {
+                // 連続ログインをインクリメント
+                $this->profile->rpg->continuous_login_count++;
+            }
+            // 昨日でなければ
+            else {
+                // 連続ログインが1日に初期化
+                $this->profile->rpg->continuous_login_count = 1;
+            }
+        }
+
+        $loginBonus = Login::getBounus(
+            $this->getContinuousLoginCount(),
+            $this->getTotalLoginCount(),
+            $this->getLastLogin()
+        );
+
+        $this->profile->rpg->last_login = Carbon::now();
+        $this->profile->rpg->save();
+        $this->givePoint($loginBonus->point);
+        $this->giveExp($loginBonus->exp);
+
+        return $loginBonus;
+    }
+
+    /**
      * プロフィール情報を保存する関数
      *
      * @param StructsProfile|null $profile プロフィールオブジェクト
