@@ -44,22 +44,53 @@
  * <https://www.gnu.org/licenses/why-not-lgpl.html>.
  */
 
-namespace OkojoBot;
+namespace OkojoBot\Common;
 
 /**
- * LINEbotの設定クラス
+ * ポイントに関するクラス
  */
-class Config
+class Point
 {
-    /** @var string 管理者UID */
-    const ADMIN_UID = 'Ue10d267e7ad66d524781ccf16ca6ddbd';
+    /**
+     * @var int 招待で取得できるポイント
+     */
+    const INVITATION_BONUS = 2000;
 
-    /** @var int 最低限のインターバル（秒）*/
-    const INTERVAL_LOWEST = 5;
+    /**
+     * @var int 寄付した時に取得できるポイント
+     */
+    const DONATION_BONUS = 10000;
 
-    /** @var int ポイントインターバル（秒）*/
-    const INTERVAL_POINT = 10;
+    /**
+     * トークで獲得できるランダムポイント
+     *
+     * @param int $adjustPercent 補正値（%）
+     *
+     * @return int
+     */
+    public static function up(int $adjustPercent = 100): int
+    {
+        /** @var int $randomPercent ランダム% */
+        $randomPercent = rand(1, 100);
 
-    /** @var int 経験値インターバル（秒）*/
-    const INTERVAL_EXP = 10;
+        // 5% 30-40
+        if ($randomPercent <= 5) {
+            $value = rand(30, 40);
+        }
+        // 10% 20-30
+        elseif ($randomPercent <= 15) {
+            $value = rand(20, 30);
+        }
+        // 45% 10-20
+        elseif ($randomPercent <= 60) {
+            $value = rand(10, 20);
+        }
+        // 40% 5-10
+        else {
+            $value = rand(5, 10);
+        }
+
+        // 補正値計算した値を返す。
+        return Func::calcPercent($value, $adjustPercent);
+    }
 }

@@ -44,22 +44,65 @@
  * <https://www.gnu.org/licenses/why-not-lgpl.html>.
  */
 
-namespace OkojoBot;
+namespace OkojoBot\Common;
 
 /**
- * LINEbotの設定クラス
+ * その他関数に関するクラス
  */
-class Config
+class Func
 {
-    /** @var string 管理者UID */
-    const ADMIN_UID = 'Ue10d267e7ad66d524781ccf16ca6ddbd';
+    /**
+     * URLセーフなbase64エンコード
+     *
+     * @param string $value 対象文字列
+     *
+     * @return string 変換後文字列
+     */
+    public static function base64_urlsafe_encode(string $value): string
+    {
+        $value = base64_encode($value);
+        return str_replace(array('+', '/', '='), array('_', '-', '.'), $value);
+    }
 
-    /** @var int 最低限のインターバル（秒）*/
-    const INTERVAL_LOWEST = 5;
+    /**
+     * URLセーフなbase64デコード
+     *
+     * @param string $value 対象文字列
+     *
+     * @return string 変換後文字列
+     */
+    public static function base64_urlsafe_decode(string $value): string
+    {
+        $value = str_replace(array('_', '-', '.'), array('+', '/', '='), $value);
+        return base64_decode($value);
+    }
 
-    /** @var int ポイントインターバル（秒）*/
-    const INTERVAL_POINT = 10;
+    /**
+     * %計算をする関数
+     *
+     * @param int $value 値
+     * @param int $percent %
+     *
+     * @return int
+     */
+    public static function calcPercent(int $value, int $percent): int
+    {
+        return ceil($value * $percent / 100);
+    }
 
-    /** @var int 経験値インターバル（秒）*/
-    const INTERVAL_EXP = 10;
+    /**
+     * アイテム所持上限数を取得する関数
+     *
+     * @param int $level
+     *
+     * @return int 所持上限数
+     */
+    public static function getItemLimitCountByLevel(int $level): int
+    {
+        $count = 10 + floor($level / 10);
+        if ($count > 35) {
+            $count = 35;
+        }
+        return $count;
+    }
 }

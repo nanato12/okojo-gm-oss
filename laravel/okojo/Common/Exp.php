@@ -44,22 +44,86 @@
  * <https://www.gnu.org/licenses/why-not-lgpl.html>.
  */
 
-namespace OkojoBot;
+namespace OkojoBot\Common;
 
 /**
- * LINEbotの設定クラス
+ * 経験値に関するクラス
  */
-class Config
+class Exp
 {
-    /** @var string 管理者UID */
-    const ADMIN_UID = 'Ue10d267e7ad66d524781ccf16ca6ddbd';
+    /**
+     * @var int 招待で取得できる経験値
+     */
+    const INVITATION_BONUS = 200;
 
-    /** @var int 最低限のインターバル（秒）*/
-    const INTERVAL_LOWEST = 5;
+    /**
+     * @var int 寄付した時に取得できる経験値
+     */
+    const DONATION_BONUS = 1000;
 
-    /** @var int ポイントインターバル（秒）*/
-    const INTERVAL_POINT = 10;
+    /**
+     * トークで獲得できるランダム経験値
+     *
+     * @param int $adjustPercent 補正値（%）
+     *
+     * @return int 経験値
+     */
+    public static function up(int $adjustPercent = 100): int
+    {
+        /** @var int $randomPercent ランダム% */
+        $randomPercent = rand(1, 100);
 
-    /** @var int 経験値インターバル（秒）*/
-    const INTERVAL_EXP = 10;
+        // 5% 60-80
+        if ($randomPercent <= 5) {
+            $value = rand(60, 80);
+        }
+        // 10% 50-60
+        elseif ($randomPercent <= 15) {
+            $value = rand(50, 60);
+        }
+        // 45% 40-50
+        elseif ($randomPercent <= 60) {
+            $value = rand(40, 50);
+        }
+        // 40% 30-40
+        else {
+            $value = rand(30, 40);
+        }
+
+        // 補正値計算した値を返す。
+        return Func::calcPercent($value, $adjustPercent);
+    }
+
+    /**
+     * 必要経験値を取得する関数
+     *
+     * @param int $level レベル
+     *
+     * @return int 必要経験値
+     */
+    public static function getNeedExpByLevel(int $level): int
+    {
+        if ($level < 5) {
+            $needExp = 100;
+        } elseif ($level < 10) {
+            $needExp = 200;
+        } elseif ($level < 20) {
+            $needExp = 300;
+        } elseif ($level < 30) {
+            $needExp = 400;
+        } elseif ($level < 40) {
+            $needExp = 500;
+        } elseif ($level < 50) {
+            $needExp = 600;
+        } elseif ($level < 100) {
+            $needExp = (int)floor(0.25 * $level ** 2);
+        } elseif ($level < 500) {
+            $needExp = (int)floor(0.3 * $level ** 2);
+        } elseif ($level < 600) {
+            $needExp = (int)floor(0.35 * $level ** 2);
+        } else {
+            $needExp = (int)floor(0.4 * $level ** 2);
+        }
+        return $needExp;
+    }
 }
