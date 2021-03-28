@@ -48,21 +48,11 @@ namespace OkojoBot\Controllers;
 
 use App\Models\Profile;
 use App\Models\RPG;
-
-interface IProfileController
-{
-    /**
-     * 新規登録する関数
-     */
-    function register(): void;
-
-    /**
-     * 新規登録済か判定する関数
-     *
-     * @return bool
-     */
-    function isRegistered(): bool;
-}
+use OkojoBot\Common\Exp;
+use OkojoBot\Common\Func;
+use OkojoBot\Common\Point;
+use OkojoBot\Config;
+use Phine\Structs\Profile as StructsProfile;
 
 /**
  * ユーザープロフィールを管理するコントローラ
@@ -70,7 +60,7 @@ interface IProfileController
  * @property string $uid ユーザーID
  * @property Profile $profile Profileモデル
  */
-class ProfileController implements IProfileController
+class ProfileController
 {
     /**
      * @var string $uid ユーザーID
@@ -101,14 +91,326 @@ class ProfileController implements IProfileController
         $this->profile = $profile;
     }
 
+    /**
+     * 新規登録する関数
+     *
+     * @return void
+     */
     function register(): void
     {
         $this->profile->is_registered = true;
         $this->profile->save();
     }
 
+    /**
+     * 新規登録済か判定する関数
+     *
+     * @return bool 新規登録済か否か
+     */
     function isRegistered(): bool
     {
         return $this->profile->is_registered;
+    }
+
+    /**
+     * LINE表示名を取得する関数
+     *
+     * @return string|null LINE表示名
+     */
+    function getDisplyName(): ?string
+    {
+        $displayName = $this->profile->display_name;
+        if (is_null($displayName)) {
+            return null;
+        }
+        return Func::base64_urlsafe_decode($displayName);
+    }
+
+    /**
+     * プレイヤー名を取得する関数
+     *
+     * @return string|null プレイヤー名
+     */
+    function getPlayerName(): ?string
+    {
+        return $this->profile->rpg->player_name;
+    }
+
+    /**
+     * プレイヤーを設定する関数
+     *
+     * @param string $playerName プレイヤー名
+     *
+     * @return void
+     */
+    function setPlayerName(string $playerName): void
+    {
+        $this->profile->rpg->player_name = $playerName;
+        $this->profile->rpg->save();
+    }
+
+    /**
+     * プレイヤーIDを取得する関数
+     *
+     * @return string|null プレイヤーID
+     */
+    function getPlayerID(): ?string
+    {
+        return $this->profile->rpg->player_id;
+    }
+
+    /**
+     * プレイヤーを設定する関数
+     *
+     * @param string $playerID プレイヤーID
+     *
+     * @return void
+     */
+    function setPlayerID(string $playerID): void
+    {
+        $this->profile->rpg->player_id = $playerID;
+        $this->profile->rpg->save();
+    }
+
+    /**
+     * 個体値を取得する関数
+     *
+     * @return int 個体値
+     */
+    function getIndividual(): int
+    {
+        return $this->profile->rpg->individual;
+    }
+
+    /**
+     * 個体値を設定する関数
+     *
+     * @param int $individual 個体値
+     *
+     * @return void
+     */
+    function setIndividual(int $individual): void
+    {
+        $this->profile->rpg->individual = $individual;
+        $this->profile->rpg->save();
+    }
+
+    /**
+     * レベルを取得する関数
+     *
+     * @return int レベル
+     */
+    function getLevel(): int
+    {
+        return $this->profile->rpg->level;
+    }
+
+    /**
+     * ポイントを取得する関数
+     *
+     * @return int 所持ポイント
+     */
+    function getPoint(): int
+    {
+        return $this->profile->rpg->point;
+    }
+
+    /**
+     * ポイントを付与する関数
+     *
+     * @param int|null $point 付与ポイント
+     *
+     * @return void
+     */
+    function givePoint(?int $point = null): void
+    {
+        if (is_null($point)) {
+            $interval = time() - $this->profile->rpg->point_update;
+            if ($interval < Config::INTERVAL_LOWEST) {
+                return;
+            } elseif ($interval < Config::INTERVAL_POINT) {
+                $point = 0;
+            } else {
+                $point = Point::up();
+            }
+        }
+        $this->profile->rpg->point += $point;
+        $this->profile->rpg->point_update = time();
+        $this->profile->rpg->save();
+    }
+
+    /**
+     * 経験値を取得する関数
+     *
+     * @return int 所持経験値
+     */
+    function getExp(): int
+    {
+        return $this->profile->rpg->exp;
+    }
+
+    /**
+     * 経験値を付与する関数
+     *
+     * @param int|null $exp 付与経験値
+     *
+     * @return bool レベルアップしたか否か
+     */
+    function giveExp(?int $exp = null): bool
+    {
+        // 経験値指定がなければ、トークでの経験値加算
+        if (is_null($exp)) {
+            // 最終経験値取得時間を取得する。
+            $interval = time() - $this->profile->rpg->exp_update;
+
+            // 最低限インターバル判定
+            if ($interval < Config::INTERVAL_LOWEST) {
+                return false;
+            }
+            // 経験値インターバル判定
+            elseif ($interval < Config::INTERVAL_EXP) {
+                $exp = 0;
+            }
+            // トークでの経験値取得
+            else {
+                $exp = Exp::up();
+            }
+        }
+
+        /** @var int ユーザー経験値 */
+        $userExp = $this->profile->rpg->exp + $exp;
+        /** @var int ユーザーレベル */
+        $userLevel = $this->profile->rpg->level;
+
+        /** @var bool レベルアップ判定 */
+        $result = false;
+
+        while (Exp::getNeedExpByLevel($userLevel) <= $userExp) {
+            $userExp -= Exp::getNeedExpByLevel($userLevel);
+            $userLevel++;
+            $result = true;
+        }
+
+        // 経験値加算、最終経験値取得時間を更新する。
+        $this->profile->rpg->level = $userLevel;
+        $this->profile->rpg->exp = $userExp;
+        $this->profile->rpg->exp_update = time();
+        $this->profile->rpg->save();
+
+        return $result;
+    }
+
+    /**
+     * コインを取得する関数
+     *
+     * @return int 所持コイン
+     */
+    function getCoin(): int
+    {
+        return $this->profile->rpg->coin;
+    }
+
+    /**
+     * コインを付与する関数
+     *
+     * @param int コイン枚数
+     *
+     * @return void
+     */
+    function giveCoin(int $coin): void
+    {
+        $this->profile->rpg->coin += $coin;
+        $this->profile->rpg->save();
+    }
+
+    /**
+     * 寄付額を取得する関数
+     *
+     * @return int 所持寄付額
+     */
+    function getDonation(): int
+    {
+        return $this->profile->donation;
+    }
+
+    /**
+     * 寄付額を付与する関数
+     *
+     * @param int $price
+     *
+     * @return void
+     */
+    function giveDonation(int $price): void
+    {
+        $this->profile->donation += $price;
+        $this->profile->save();
+    }
+
+    /**
+     * アイテム所持上限数を取得する関数
+     *
+     * @return int
+     */
+    function getItemLimitCount(): int
+    {
+        return Func::getItemLimitCountByLevel($this->getLevel());
+    }
+
+    /**
+     * 招待コードを取得する関数
+     *
+     * @return string 招待コード
+     */
+    function getInviteCode(): string
+    {
+        // 招待コードが設定されていなければ、発行
+        if (is_null($this->profile->invite_code)) {
+            // uniqidを36進数変換して大文字変換
+            $this->profile->invite_code = strtoupper(base_convert(uniqid(), 16, 36));
+            $this->profile->save();
+        }
+        return $this->profile->invite_code;
+    }
+
+    /**
+     * 招待コードを使用する関数
+     *
+     * @param string $inviteCode 招待コード
+     *
+     * @return bool 使用できたか否か
+     */
+    function useInviteCode(string $inviteCode): bool
+    {
+        // NULLであれば使用可能
+        if (is_null($this->profile->used_invite_code)) {
+            // 使用済みに設定
+            $this->profile->used_invite_code = $inviteCode;
+            $this->profile->save();
+
+            // 招待ボーナスを付与する。
+            $this->givePoint(Point::INVITATION_BONUS);
+            $this->giveExp(Exp::INVITATION_BONUS);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * プロフィール情報を保存する関数
+     *
+     * @param StructsProfile|null $profile プロフィールオブジェクト
+     *
+     * @return void
+     */
+    function saveProfile(?StructsProfile $profile): void
+    {
+        if (is_null($profile)) {
+            return;
+        }
+        $this->profile->display_name = Func::base64_urlsafe_encode($profile->displayName);
+        $this->profile->picture_url = $profile->pictureUrl;
+        $this->profile->status_message = $profile->statusMessage;
+        $this->profile->lang = $profile->language;
+        $this->profile->save();
     }
 }
