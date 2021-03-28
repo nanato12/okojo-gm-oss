@@ -48,10 +48,13 @@ namespace OkojoBot\Controllers;
 
 use App\Models\Profile;
 use App\Models\RPG;
+use Carbon\Carbon;
 use OkojoBot\Common\Exp;
 use OkojoBot\Common\Func;
+use OkojoBot\Common\Login;
 use OkojoBot\Common\Point;
 use OkojoBot\Config;
+use OkojoBot\Objects\Bonus;
 use Phine\Structs\Profile as StructsProfile;
 
 /**
@@ -203,6 +206,80 @@ class ProfileController
     function getLevel(): int
     {
         return $this->profile->rpg->level;
+    }
+
+    /**
+     * パーティに参加する関数
+     *
+     * @param string $partyId パーティID
+     *
+     * @return void
+     */
+    function joinParty(string $partyId): void
+    {
+        $this->profile->rpg->party = $partyId;
+        $this->profile->rpg->party_request = null;
+        $this->profile->rpg->save();
+    }
+
+    /**
+     * パーティ申請する関数
+     *
+     * @param string $partyId パーティID
+     *
+     * @return void
+     */
+    function requestParty(string $partyId)
+    {
+        $this->profile->rpg->party_request = $partyId;
+        $this->profile->rpg->save();
+        return true;
+    }
+
+    /**
+     * タイプを取得する関数
+     *
+     * @return string|null タイプID
+     */
+    function getType(): ?string
+    {
+        return $this->profile->rpg->type;
+    }
+
+    /**
+     * タイプを設定する関数
+     *
+     * @param string $typeId タイプID
+     *
+     * @return void
+     */
+    function setType(string $typeId): void
+    {
+        $this->profile->rpg->type = $typeId;
+        $this->profile->rpg->save();
+    }
+
+    /**
+     * アイテムを取得する関数
+     *
+     * @return string|null アイテムID
+     */
+    function getItem(): ?string
+    {
+        return $this->profile->rpg->item;
+    }
+
+    /**
+     * アイテムを設定する関数
+     *
+     * @param string $itemId アイテムID
+     *
+     * @return void
+     */
+    function setItem(string $itemId): void
+    {
+        $this->profile->rpg->item = $itemId;
+        $this->profile->rpg->save();
     }
 
     /**
@@ -393,6 +470,36 @@ class ProfileController
             return true;
         }
         return false;
+    }
+
+    /**
+     * 最終ログイン日時を取得する関数
+     *
+     * @return Carbon|null 最終ログイン日時
+     */
+    function getLastLogin(): ?Carbon
+    {
+        return $this->profile->rpg->last_login;
+    }
+
+    /**
+     * 累計ログイン回数を取得する関数
+     *
+     * @return int 累計ログイン回数
+     */
+    function getTotalLoginCount(): int
+    {
+        return $this->profile->rpg->total_login_count;
+    }
+
+    /**
+     * 連続ログイン関数を取得する関数
+     *
+     * @return int 連続ログイン回数
+     */
+    function getContinuousLoginCount(): int
+    {
+        return $this->profile->rpg->continuous_login_count;
     }
 
     /**
