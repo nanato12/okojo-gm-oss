@@ -51,8 +51,15 @@ namespace OkojoBot;
  */
 class Config
 {
-    /**
-     * @var string 管理者UID
-     */
+    /** @var string 管理者UID */
     const ADMIN_UID = 'Ue10d267e7ad66d524781ccf16ca6ddbd';
+
+    /** @var int 最低限のインターバル（秒）*/
+    const INTERVAL_LOWEST = 5;
+
+    /** @var int ポイントインターバル（秒）*/
+    const INTERVAL_POINT = 10;
+
+    /** @var int 経験値インターバル（秒）*/
+    const INTERVAL_EXP = 10;
 }
