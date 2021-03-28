@@ -51,7 +51,6 @@ namespace OkojoBot\Common;
  */
 class Func
 {
-
     /**
      * URLセーフなbase64エンコード
      *
