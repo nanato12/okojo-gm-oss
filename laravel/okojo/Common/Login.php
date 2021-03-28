@@ -33,7 +33,7 @@ class Login
             $dailyPoint = (1 + floor($continuousLoginCount / 10)) * 500;
         }
         // 100日単位
-        else if ($continuousLoginCount % 100 == 0) {
+        elseif ($continuousLoginCount % 100 == 0) {
             $dailyPoint = 50000;
         }
         // それ以外
